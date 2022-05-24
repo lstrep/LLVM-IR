@@ -4,7 +4,7 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import java.util.*;
 
 
-enum VarType{INT, FLOAT, ID, intARRAY, floatARRAY, STRING}
+enum VarType{INT, FLOAT, ID, intARRAY, floatARRAY, STRING, FUNCTION}
 class Value{
     public String name;
     public VarType type;
@@ -17,12 +17,148 @@ class Value{
 
 public class LLVMActions extends GramatykaBaseListener {
 
+
+
+    HashSet<String> globalnames = new HashSet();
+    HashSet<String> functions = new HashSet<>();
+    HashSet<String> localnames = new HashSet<>();
+
     HashMap<String, VarType> variables = new HashMap<>();
+    HashMap<String, String> localVariables = new HashMap<>();
     HashMap<String, String> variableValues = new HashMap<>();
     HashMap<String, Integer> arraySize = new HashMap<>();
 
     Stack<Value> stack = new Stack<>();
     Stack<Value> stackArr = new Stack<>();
+
+    String function;
+    Boolean global;
+    @Override
+    public void enterProg(GramatykaParser.ProgContext ctx) {
+        global = true;
+    }
+
+    @Override
+    public void exitCall(GramatykaParser.CallContext ctx) {
+        String ID = ctx.ID().getText();
+        if(functions.contains(ID)) {
+            LLVMGenerator.call(ID);
+        } else {
+            error(ctx.getStart().getLine(), ID + " is not a fuction");
+        }
+    }
+
+    @Override
+    public void exitFparam(GramatykaParser.FparamContext ctx) {
+        String ID = ctx.ID().getText(); // weŸ nazwê
+        if (!variables.containsKey(ID)) { // jeœli nie ma takiej zmiennej
+            variables.put(ID, VarType.FUNCTION); // dodaj j¹ do listy
+            functions.add(ID); // dodaj do nazw funkcji
+            function = ID; // bie¿¹ca funkcja
+            LLVMGenerator.functionstart(ID);
+        } else { // taka zmienna ju¿ istnieje
+            error(ctx.getStart().getLine(), "Name " + ID + " already declared");
+        }
+    }
+
+    @Override
+    public void enterBlockfunction(GramatykaParser.BlockfunctionContext ctx) {
+        global = false;
+    }
+
+    @Override
+    public void exitBlockfunction(GramatykaParser.BlockfunctionContext ctx) {
+        if(!localVariables.containsKey(function) ){ // jeœli nie ma takiej zmiennej lokalnej
+            localVariables.put(function, "function");
+            LLVMGenerator.declare_i32(function, false);
+            LLVMGenerator.assign_i32("%" + function, "0"); // to j¹ zapisz
+        }
+        LLVMGenerator.load_i32("%" + function); // za³aduj
+        LLVMGenerator.functionend(); // zakoñcz funkcjê pod spodem
+        localVariables = new HashMap<>();
+        // localnames = new HashSet<String>(); // wyczyœæ lokalne zmienne
+        global = true; // wróæ do globala
+    }
+
+    @Override
+    public void exitRepetitions(GramatykaParser.RepetitionsContext ctx) {
+        Value value = stack.pop();
+        String outRepeat = "";
+        if( value.type == VarType.ID ){
+            String ID = value.name;
+            if( variables.containsKey(ID) ) {
+                if(ID.equals("int")) {
+                    LLVMGenerator.load_i32(ID);
+                    outRepeat = "%" + (LLVMGenerator.reg - 1);
+                } else {
+                    error(ctx.getStart().getLine(), "Mismatch type in loop");
+                }
+            } else {
+                error(ctx.getStart().getLine(), "unknown variable "+ID);
+            }
+        }
+
+        if( value.type== VarType.INT ){
+            outRepeat = value.name;
+        }else {
+            error(ctx.getStart().getLine(), "Mismatch type in loop");
+        }
+
+        LLVMGenerator.repeatstart(outRepeat);
+    }
+
+    @Override
+    public void exitBlockfor(GramatykaParser.BlockforContext ctx) {
+        if( ctx.getParent() instanceof GramatykaParser.LoopContext ){
+            LLVMGenerator.repeatend();
+        }
+    }
+
+    @Override
+    public void enterBlockif(GramatykaParser.BlockifContext ctx) {
+        LLVMGenerator.ifstart();
+    }
+
+    @Override
+    public void exitBlockif(GramatykaParser.BlockifContext ctx) {
+        LLVMGenerator.ifend();
+    }
+
+    @Override
+    public void exitEqualsIf(GramatykaParser.EqualsIfContext ctx) {
+        String ID = ctx.ID().getText();
+        String INT = ctx.INT().getText();
+        if (variables.containsKey(ID)){
+            LLVMGenerator.icmp(set_variable(ID,VarType.INT), INT, "=");
+        }else{
+            ctx.getStart().getLine();
+            System.err.println("Line " + ctx.getStart().getLine()+", unknown variable: " + ID);
+        }
+    }
+
+    @Override
+    public void exitIsBiggerIf(GramatykaParser.IsBiggerIfContext ctx) {
+        String ID = ctx.ID().getText();
+        String INT = ctx.INT().getText();
+        if (variables.containsKey(ID)){
+            LLVMGenerator.icmp(set_variable(ID,VarType.INT), INT, ">");
+        }else{
+            ctx.getStart().getLine();
+            System.err.println("Line " + ctx.getStart().getLine()+", unknown variable: " + ID);
+        }
+    }
+
+    @Override
+    public void exitIsSmallerIf(GramatykaParser.IsSmallerIfContext ctx) {
+        String ID = ctx.ID().getText();
+        String INT = ctx.INT().getText();
+        if (variables.containsKey(ID)){
+            LLVMGenerator.icmp(set_variable(ID,VarType.INT), INT, "<");
+        }else{
+            ctx.getStart().getLine();
+            System.err.println("Line " + ctx.getStart().getLine()+", unknown variable: " + ID);
+        }
+    }
 
     @Override
     public void enterWrongStat(GramatykaParser.WrongStatContext ctx)  {
@@ -31,6 +167,7 @@ public class LLVMActions extends GramatykaBaseListener {
 
     @Override
     public void exitProg(GramatykaParser.ProgContext ctx) {
+        LLVMGenerator.close_main();
         System.out.println( LLVMGenerator.generate() );
   }
 
@@ -99,10 +236,10 @@ public class LLVMActions extends GramatykaBaseListener {
         VarType type = variables.get(ID);
         if( type != null ) {
             if( type == VarType.INT ){
-                LLVMGenerator.printf_i32( ID );
+                LLVMGenerator.printf_i32( set_variable(ID, VarType.INT) );
             }
             if( type == VarType.FLOAT ){
-                LLVMGenerator.printf_double( ID );
+                LLVMGenerator.printf_double( set_variable(ID, VarType.FLOAT) );
             }
             if(type == VarType.intARRAY){
                 LLVMGenerator.printf_arrayIntAt(ID,arraySize.get(ID),0);
@@ -146,34 +283,38 @@ public class LLVMActions extends GramatykaBaseListener {
         String ID = ctx.ID().getText();
         Value v = stack.pop();
 
-        if (variables.containsKey(ID)) {
-            error(ctx.getStart().getLine(), "variable already defined "+ID);
+        if(global){
+            if (globalnames.contains(ID)) {
+                error(ctx.getStart().getLine(), "variable already defined "+ID);
+            }
+        }else{
+            if (localnames.contains(ID)) {
+                error(ctx.getStart().getLine(), "variable already defined "+ID);
+            }
         }
+
+
 
         variables.put(ID, v.type);
-        variableValues.put(ID, v.name);
 
         if (v.type == VarType.INT) {
-            LLVMGenerator.declare_i32(ID);
-            LLVMGenerator.assign_i32(ID, v.name);
+            LLVMGenerator.assign_i32(set_variable(ID, VarType.INT), v.name);
         }
         if (v.type == VarType.FLOAT) {
-            LLVMGenerator.declare_double(ID);
-            LLVMGenerator.assign_double(ID, v.name);
+            LLVMGenerator.assign_double(set_variable(ID, VarType.FLOAT), v.name);
         }
         if (v.type == VarType.ID) {
 
             if (variables.get(v.name) == VarType.FLOAT) {
 
-                LLVMGenerator.declare_double(ID);
-                LLVMGenerator.assign_double(ID, variableValues.get(v.name));
+                LLVMGenerator.assign_double(set_variable(ID, VarType.FLOAT), variableValues.get(v.name));
                 variables.replace(ID, VarType.FLOAT);
                 variableValues.replace(ID, variableValues.get(v.name));
             }
 
             if (variables.get(v.name) == VarType.INT) {
 
-                LLVMGenerator.declare_i32(ID);
+                set_variable(ID, VarType.INT);
                 LLVMGenerator.assign_i32(ID, variableValues.get(v.name));
                 variables.replace(ID, VarType.INT);
                 variableValues.replace(ID, variableValues.get(v.name));
@@ -189,7 +330,7 @@ public class LLVMActions extends GramatykaBaseListener {
 
         if(!variables.containsKey(ID)){
                 variables.put(ID, VarType.INT);
-                LLVMGenerator.declare_i32(ID);
+                set_variable(ID, VarType.INT);
         }else
         {
             error(ctx.getStart().getLine(), "already declared");
@@ -315,6 +456,33 @@ public class LLVMActions extends GramatykaBaseListener {
     @Override
     public void exitValueBrackets(GramatykaParser.ValueBracketsContext ctx) {
         super.exitValueBrackets(ctx);
+    }
+    public String set_variable(String ID, VarType type){
+        String id;
+        if( global ){
+            if( ! globalnames.contains(ID) ) {
+                globalnames.add(ID);
+                if(type==VarType.INT) {
+                    LLVMGenerator.declare_i32(ID, true);
+                }
+                if(type == VarType.FLOAT){
+                    LLVMGenerator.declare_double(ID,true);
+                }
+            }
+            id = "@"+ID;
+        } else {
+            if( ! localnames.contains(ID) ) {
+                localnames.add(ID);
+                if(type==VarType.INT) {
+                    LLVMGenerator.declare_i32(ID, false);
+                }
+                if(type == VarType.FLOAT){
+                    LLVMGenerator.declare_double(ID,false);
+                }
+            }
+            id = "%"+ID;
+        }
+        return id;
     }
 
 

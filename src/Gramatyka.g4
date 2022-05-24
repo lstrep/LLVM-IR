@@ -1,18 +1,47 @@
 grammar Gramatyka;
 
-prog: ( stat? NEWLINE )*
+prog: ( (stat|function?) NEWLINE )*
 ;
 
 stat:	WRITE ID		        #write
 	    | ID EQ someValues		#assign
         | READ ID   		    #read
+        | ID '('')'             #call
         | wrongStatement        #wrongStat
         | typeArray ID EQ '[' arrayDeclaration ']'     #declareArray
-        |WRITE ID '[' INT ']'   #writeArrayAt
+        | WRITE ID '[' INT ']'   #writeArrayAt
         | 'string' ID EQ STRING #newString
         | WRITE STRING          #writeString
+        | IF '(' statementIf ')' ifStart insideIf ifEnd #if
+        | FOR  repetitions '{' blockfor '}' #loop
         ;
 
+function: 'func' fparam '{' blockfunction '}'
+;
+fparam: ID
+;
+blockfunction: ( stat? NEWLINE )*
+;
+
+repetitions: value
+;
+FOR: 'for'
+;
+IF: 'if';
+insideIf: NEWLINE? blockif NEWLINE?
+;
+ifStart: '{'
+;
+ifEnd: '}'
+;
+blockfor: (stat? NEWLINE)*
+;
+blockif: ( stat? NEWLINE )*
+;
+statementIf: ID '==' INT  #equalsIf
+| ID '>' INT              #isBiggerIf
+| ID '<' INT              #isSmallerIf
+;
 wrongStatement: ID
                 | EQ
                 | ADD

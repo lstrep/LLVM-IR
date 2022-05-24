@@ -37,6 +37,13 @@ public interface GramatykaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitRead(GramatykaParser.ReadContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code call}
+	 * labeled alternative in {@link GramatykaParser#stat}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCall(GramatykaParser.CallContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code wrongStat}
 	 * labeled alternative in {@link GramatykaParser#stat}.
 	 * @param ctx the parse tree
@@ -71,6 +78,95 @@ public interface GramatykaVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitWriteString(GramatykaParser.WriteStringContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code if}
+	 * labeled alternative in {@link GramatykaParser#stat}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIf(GramatykaParser.IfContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code loop}
+	 * labeled alternative in {@link GramatykaParser#stat}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLoop(GramatykaParser.LoopContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramatykaParser#function}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFunction(GramatykaParser.FunctionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramatykaParser#fparam}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFparam(GramatykaParser.FparamContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramatykaParser#blockfunction}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBlockfunction(GramatykaParser.BlockfunctionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramatykaParser#repetitions}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRepetitions(GramatykaParser.RepetitionsContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramatykaParser#insideIf}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInsideIf(GramatykaParser.InsideIfContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramatykaParser#ifStart}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIfStart(GramatykaParser.IfStartContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramatykaParser#ifEnd}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIfEnd(GramatykaParser.IfEndContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramatykaParser#blockfor}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBlockfor(GramatykaParser.BlockforContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramatykaParser#blockif}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBlockif(GramatykaParser.BlockifContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code equalsIf}
+	 * labeled alternative in {@link GramatykaParser#statementIf}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitEqualsIf(GramatykaParser.EqualsIfContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code isBiggerIf}
+	 * labeled alternative in {@link GramatykaParser#statementIf}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIsBiggerIf(GramatykaParser.IsBiggerIfContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code isSmallerIf}
+	 * labeled alternative in {@link GramatykaParser#statementIf}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIsSmallerIf(GramatykaParser.IsSmallerIfContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link GramatykaParser#wrongStatement}.
 	 * @param ctx the parse tree

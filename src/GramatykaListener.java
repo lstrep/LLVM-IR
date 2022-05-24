@@ -53,6 +53,18 @@ public interface GramatykaListener extends ParseTreeListener {
 	 */
 	void exitRead(GramatykaParser.ReadContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code call}
+	 * labeled alternative in {@link GramatykaParser#stat}.
+	 * @param ctx the parse tree
+	 */
+	void enterCall(GramatykaParser.CallContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code call}
+	 * labeled alternative in {@link GramatykaParser#stat}.
+	 * @param ctx the parse tree
+	 */
+	void exitCall(GramatykaParser.CallContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code wrongStat}
 	 * labeled alternative in {@link GramatykaParser#stat}.
 	 * @param ctx the parse tree
@@ -112,6 +124,156 @@ public interface GramatykaListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitWriteString(GramatykaParser.WriteStringContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code if}
+	 * labeled alternative in {@link GramatykaParser#stat}.
+	 * @param ctx the parse tree
+	 */
+	void enterIf(GramatykaParser.IfContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code if}
+	 * labeled alternative in {@link GramatykaParser#stat}.
+	 * @param ctx the parse tree
+	 */
+	void exitIf(GramatykaParser.IfContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code loop}
+	 * labeled alternative in {@link GramatykaParser#stat}.
+	 * @param ctx the parse tree
+	 */
+	void enterLoop(GramatykaParser.LoopContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code loop}
+	 * labeled alternative in {@link GramatykaParser#stat}.
+	 * @param ctx the parse tree
+	 */
+	void exitLoop(GramatykaParser.LoopContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link GramatykaParser#function}.
+	 * @param ctx the parse tree
+	 */
+	void enterFunction(GramatykaParser.FunctionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link GramatykaParser#function}.
+	 * @param ctx the parse tree
+	 */
+	void exitFunction(GramatykaParser.FunctionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link GramatykaParser#fparam}.
+	 * @param ctx the parse tree
+	 */
+	void enterFparam(GramatykaParser.FparamContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link GramatykaParser#fparam}.
+	 * @param ctx the parse tree
+	 */
+	void exitFparam(GramatykaParser.FparamContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link GramatykaParser#blockfunction}.
+	 * @param ctx the parse tree
+	 */
+	void enterBlockfunction(GramatykaParser.BlockfunctionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link GramatykaParser#blockfunction}.
+	 * @param ctx the parse tree
+	 */
+	void exitBlockfunction(GramatykaParser.BlockfunctionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link GramatykaParser#repetitions}.
+	 * @param ctx the parse tree
+	 */
+	void enterRepetitions(GramatykaParser.RepetitionsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link GramatykaParser#repetitions}.
+	 * @param ctx the parse tree
+	 */
+	void exitRepetitions(GramatykaParser.RepetitionsContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link GramatykaParser#insideIf}.
+	 * @param ctx the parse tree
+	 */
+	void enterInsideIf(GramatykaParser.InsideIfContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link GramatykaParser#insideIf}.
+	 * @param ctx the parse tree
+	 */
+	void exitInsideIf(GramatykaParser.InsideIfContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link GramatykaParser#ifStart}.
+	 * @param ctx the parse tree
+	 */
+	void enterIfStart(GramatykaParser.IfStartContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link GramatykaParser#ifStart}.
+	 * @param ctx the parse tree
+	 */
+	void exitIfStart(GramatykaParser.IfStartContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link GramatykaParser#ifEnd}.
+	 * @param ctx the parse tree
+	 */
+	void enterIfEnd(GramatykaParser.IfEndContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link GramatykaParser#ifEnd}.
+	 * @param ctx the parse tree
+	 */
+	void exitIfEnd(GramatykaParser.IfEndContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link GramatykaParser#blockfor}.
+	 * @param ctx the parse tree
+	 */
+	void enterBlockfor(GramatykaParser.BlockforContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link GramatykaParser#blockfor}.
+	 * @param ctx the parse tree
+	 */
+	void exitBlockfor(GramatykaParser.BlockforContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link GramatykaParser#blockif}.
+	 * @param ctx the parse tree
+	 */
+	void enterBlockif(GramatykaParser.BlockifContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link GramatykaParser#blockif}.
+	 * @param ctx the parse tree
+	 */
+	void exitBlockif(GramatykaParser.BlockifContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code equalsIf}
+	 * labeled alternative in {@link GramatykaParser#statementIf}.
+	 * @param ctx the parse tree
+	 */
+	void enterEqualsIf(GramatykaParser.EqualsIfContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code equalsIf}
+	 * labeled alternative in {@link GramatykaParser#statementIf}.
+	 * @param ctx the parse tree
+	 */
+	void exitEqualsIf(GramatykaParser.EqualsIfContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code isBiggerIf}
+	 * labeled alternative in {@link GramatykaParser#statementIf}.
+	 * @param ctx the parse tree
+	 */
+	void enterIsBiggerIf(GramatykaParser.IsBiggerIfContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code isBiggerIf}
+	 * labeled alternative in {@link GramatykaParser#statementIf}.
+	 * @param ctx the parse tree
+	 */
+	void exitIsBiggerIf(GramatykaParser.IsBiggerIfContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code isSmallerIf}
+	 * labeled alternative in {@link GramatykaParser#statementIf}.
+	 * @param ctx the parse tree
+	 */
+	void enterIsSmallerIf(GramatykaParser.IsSmallerIfContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code isSmallerIf}
+	 * labeled alternative in {@link GramatykaParser#statementIf}.
+	 * @param ctx the parse tree
+	 */
+	void exitIsSmallerIf(GramatykaParser.IsSmallerIfContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link GramatykaParser#wrongStatement}.
 	 * @param ctx the parse tree

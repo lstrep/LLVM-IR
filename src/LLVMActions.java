@@ -42,7 +42,7 @@ public class LLVMActions extends GramatykaBaseListener {
     public void exitCall(GramatykaParser.CallContext ctx) {
         String ID = ctx.ID().getText();
         if(functions.contains(ID)) {
-            LLVMGenerator.call(ID);
+            LLVMGenerator.callfunction(ID);
         } else {
             error(ctx.getStart().getLine(), ID + " is not a fuction");
         }
@@ -50,13 +50,14 @@ public class LLVMActions extends GramatykaBaseListener {
 
     @Override
     public void exitFparam(GramatykaParser.FparamContext ctx) {
-        String ID = ctx.ID().getText(); // weŸ nazwê
-        if (!variables.containsKey(ID)) { // jeœli nie ma takiej zmiennej
-            variables.put(ID, VarType.FUNCTION); // dodaj j¹ do listy
-            functions.add(ID); // dodaj do nazw funkcji
-            function = ID; // bie¿¹ca funkcja
+        String ID = ctx.ID().getText();
+        if (!variables.containsKey(ID)) {
+            variables.put(ID, VarType.FUNCTION);
+            functions.add(ID);
+
+            function = ID;
             LLVMGenerator.functionstart(ID);
-        } else { // taka zmienna ju¿ istnieje
+        } else {
             error(ctx.getStart().getLine(), "Name " + ID + " already declared");
         }
     }
@@ -68,16 +69,16 @@ public class LLVMActions extends GramatykaBaseListener {
 
     @Override
     public void exitBlockfunction(GramatykaParser.BlockfunctionContext ctx) {
-        if(!localVariables.containsKey(function) ){ // jeœli nie ma takiej zmiennej lokalnej
+        if(!localVariables.containsKey(function) ){
             localVariables.put(function, "function");
             LLVMGenerator.declare_i32(function, false);
-            LLVMGenerator.assign_i32("%" + function, "0"); // to j¹ zapisz
+            LLVMGenerator.assign_i32("%" + function, "0");
         }
-        LLVMGenerator.load_i32("%" + function); // za³aduj
-        LLVMGenerator.functionend(); // zakoñcz funkcjê pod spodem
+        LLVMGenerator.load_i32("%" + function);
+        LLVMGenerator.functionend();
         localVariables = new HashMap<>();
-        // localnames = new HashSet<String>(); // wyczyœæ lokalne zmienne
-        global = true; // wróæ do globala
+
+        global = true;
     }
 
     @Override
@@ -336,7 +337,7 @@ public class LLVMActions extends GramatykaBaseListener {
             error(ctx.getStart().getLine(), "already declared");
         }
 
-        LLVMGenerator.scanf(ID);
+        LLVMGenerator.scanf(set_variable(ID,VarType.INT));
     }
     @Override
     public void exitNewString(GramatykaParser.NewStringContext ctx) {

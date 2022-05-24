@@ -11,7 +11,7 @@ class LLVMGenerator{
    static Stack<Integer> brstack = new Stack<>();
    static String buffer = "";
 
-   static void call(String id) { // klasyk
+   static void callfunction(String id) {
       buffer += "%" + reg + " = call i32 @" + id + "()\n";
       reg++;
    }
@@ -173,7 +173,7 @@ class LLVMGenerator{
 
 
    static void scanf(String id){
-      buffer += "%"+reg+" = call i32 (i8*, ...) @__isoc99_scanf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @strs, i32 0, i32 0), i32* %"+id+")\n";
+      buffer += "%"+reg+" = call i32 (i8*, ...) @__isoc99_scanf(i8* getelementptr inbounds ([3 x i8], [3 x i8]* @strs, i32 0, i32 0), i32* "+id+")\n";
       reg++;
    }
 

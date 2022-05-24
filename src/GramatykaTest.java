@@ -9,18 +9,15 @@ public class GramatykaTest {
     public static void main(String[] args)  {
 
 
-        String input = " func ala{ \n" +
-                "x = 4 \n" +
-                        "for 5{ \n" +
-                "write x \n" +
-                "}\n" +
-                        "write x\n" +
-                        "}   \n" +
-                "ala() \n" +
-                "x = 3\n" +
-                "if (x==3){\n" +
-                "write x\n" +
-                "}\n";
+        String input =
+
+                        " func funkcja{ \n" +
+                        " x = 3 \n" +
+                        " write x \n" +
+                        " } \n" +
+                        " x = 5 \n" +
+                        "funkcja()\n"+
+                        " write x \n" ;
 
         GramatykaLexer lexer = new GramatykaLexer(CharStreams.fromString(input));
 

@@ -1,4 +1,4 @@
-# Project
+# LLVM IR
 My own programming language
 
 In this project I have made really simple programming language and implemented its compiler. 
